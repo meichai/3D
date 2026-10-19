@@ -1,35 +1,55 @@
-# Blender 云端自动建模环境
+# Blender 云端环境
 
-已验证环境（2026-10-19）：Debian 13.6 x86_64，系统 Python 3.12.14，Debian Blender 4.3.2+dfsg-2，Blender 内部 Python 3.13.5。使用当前镜像已有的稳定发行版 4.3.2；它不是 LTS，也不宣称为最新版本。无需显示服务器、GPU、外部 bpy 包或付费服务。
+基线：Blender 4.3.2，后台运行，无需显示服务器或 GPU。脚本不修改已有模型、用户首选项或系统软件。
 
-## Codex Cloud 配置
+## 云端配置
 
-关联仓库选择 `meichai/3D`。在环境的安装脚本（Setup script）填入以下内容（从仓库根目录执行）：
+仓库选择 `meichai/3D`，分支选择 `main`，安装脚本在仓库根目录执行：
 
 ```bash
 bash cloud-blender/setup.sh
 bash cloud-blender/test.sh
 ```
 
-维护脚本（Maintenance script，如有）也可运行相同命令。保存环境配置，重新创建一个任务验证。此仓库文件不会自动修改 Codex 控制台中的安装脚本字段；必须在控制台保存该字段。当前任务镜像已经有 Blender，因此本次没有下载或替换系统程序。
+仓库文件不会自动更新云端控制台的安装脚本字段。需在环境配置中保存上述命令。
 
-setup.sh 可重复执行：存在 Blender 时验证精确版本和导出算子；缺少时使用 apt 安装（需要 root 或已有免密码 sudo）。没有安装权限时明确失败，不请求密码、不修改系统权限。不支持任意无权限空白镜像自动安装。Debian 13 当前包为 4.3.2；若软件源升级版本，版本校验会失败，应先验证新版本再更新基线。首次下载分支本次未执行。软件源网络须可访问 deb.debian.org/security.debian.org；当前任务代理连接失败，不能宣称联网安装已验证。
+## 无管理员权限安装
 
-为了可靠复用，后续任务保持相同 Debian 13 镜像及预装 Blender，或在有安装权限的初始化阶段安装 Blender。可设置 `BLENDER_BIN=/absolute/path/to/blender` 选择匹配的可执行文件。
+优先使用 `BLENDER_BIN` 指定的程序或 PATH 中的 Blender，然后复用 `BLENDER_INSTALL_DIR`（默认 `work/blender-runtime`）中的缓存。已有程序版本不符或无法运行时直接失败，不自动替换。
 
-## 建模与测试
+没有 Blender 时默认明确失败，避免不必要的下载。允许用户目录安装：
 
 ```bash
-blender --background --factory-startup --python-exit-code 1 --python your_model.py
+BLENDER_ALLOW_DOWNLOAD=1 bash cloud-blender/setup.sh
 bash cloud-blender/test.sh
 ```
 
-Python 脚本在 Blender 内执行，使用内置 bpy/bmesh。系统 Python 与 Blender Python 版本不同，勿向系统 Python 安装 bpy 来代替 Blender。
+下载仅支持 Linux x86_64，使用官方 4.3.2 压缩包及 SHA256 清单，无需 root、sudo 或 apt。需要 curl、tar、xz、sha256sum 和镜像提供的 Blender 动态库。若下载域名 download.blender.org 被网络策略阻止，应在环境配置中允许该域名或使用预装镜像，不能靠脚本绕过策略。此下载分支尚未经过真实联网安装验证。
 
-测试每次创建 `work/blender-tests/run-XXXXXXXX/`，不覆盖之前的输出。生成 cube_50mm.blend、STL、OBJ、MTL、FBX、日志及 JSON/文本报告。共 14 项检查：源尺寸和网格、每种格式的文件、重新导入对象数、尺寸及网格完整性。任一失败退出码非零，已执行的项目记录成功或失败。STL 顶点合并后验证封闭性，允许导出器三角化，尺寸误差阈值 0.001 mm。
+安装日志每次保存为 `work/blender-setup/setup-XXXXXXXX.log`，成功后记录程序路径到 `work/blender-setup/env.sh`，供 test.sh 使用。失败退出码非零。work 目录不提交 Git；任务销毁前应从日志界面或工作区导出所需日志。
 
-统一约定 1 个坐标单位 = 1 mm，场景 scale_length=0.001，立方体坐标尺寸为 50。STL、OBJ 无可靠物理单位，其他软件导入时选择毫米；FBX 写入单位元数据。回读验证在同版本 Blender 中完成，不代表所有第三方软件的默认单位设置。
+## 空仓库排查
 
-## 已知限制
+2026-10-19 检查发现：GitHub main 已含脚本，但新工作区停留在无提交的 work 分支，且 git 连接代理端口 8080 失败。应区分远端为空和检出失败。可检查：
 
-本次工作区和远端仓库均为空，未删除或覆盖模型。无 sudo、无 root；全新镜像的 apt 安装分支未验证。远端文件通过 GitHub 连接器保存；普通 git 网络连接代理失败。测试输出不提交 Git，仅提交脚本、说明及测试基线报告。Codex 控制台配置字段需用户保存；云端任务销毁后应依靠仓库和安装脚本恢复环境，而非依靠本任务磁盘。
+```bash
+git status --short --branch
+git remote -v
+git log -5 --oneline
+git ls-remote origin
+```
+
+网络恢复且工作区无待保存更改后，通过正常 fetch/checkout 检出 origin/main。不要删除已有项目来修复检出。本次通过 GitHub 连接器按固定提交读取文件；这不代表云端原生 checkout 已恢复。
+
+## 建模与验证
+
+`test.sh` 每次创建唯一的 `work/blender-tests/run-XXXXXXXX`，生成 50 mm 立方体的 blend、STL、OBJ、MTL、FBX、blender.log、report.json 和 report.txt，不覆盖历史结果。14 项检查涵盖源尺寸、网格封闭性、体积、三种格式导出及重新导入。
+
+1 坐标单位 = 1 mm，场景 scale_length=0.001。STL/OBJ 导入其他软件时选毫米；FBX 写入单位元数据。回读只证明本版本 Blender 的往返结果。
+
+`validated-report.json` 为先前成功测试的历史基线；本次执行日志和报告保留在本任务 work 目录，不公开上传。测试脚本运行在 factory-startup 的独立 Blender 进程，不读取已有模型。
+
+## 新任务验证状态
+
+当前会话工具没有创建 Codex 云端任务或编辑环境配置的接口，未创建新任务。本次以 UID 1000 复用 /usr/bin/blender，安装脚本成功，14 项建模与导出检查全部通过。缺少 Blender 且未允许下载时按预期以退出码 2 失败。完成了本会话云端执行及 GitHub 固定提交文件读取验证；两者不能替代新任务的原生检出与自动安装验证。
+
