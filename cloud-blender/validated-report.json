@@ -1,0 +1,123 @@
+{
+  "timestamp_utc": "2026-10-19T09:41:35.166357+00:00",
+  "blender": "4.3.2",
+  "blender_python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+  "os": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "checks": [
+    {
+      "name": "source_dimensions_50mm",
+      "passed": true,
+      "dimensions_mm": [
+        50.0,
+        50.0,
+        50.0
+      ]
+    },
+    {
+      "name": "source_mesh_integrity",
+      "passed": true,
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "closed": true,
+      "degenerate_faces": 0,
+      "volume_mm3": 124999.99999999999
+    },
+    {
+      "name": "stl_file",
+      "passed": true
+    },
+    {
+      "name": "stl_roundtrip_count",
+      "passed": true
+    },
+    {
+      "name": "stl_roundtrip_dimensions",
+      "passed": true,
+      "dimensions_mm": [
+        50.0,
+        50.0,
+        50.0
+      ]
+    },
+    {
+      "name": "stl_roundtrip_integrity",
+      "passed": true,
+      "vertices": 8,
+      "edges": 18,
+      "faces": 12,
+      "closed": true,
+      "degenerate_faces": 0,
+      "volume_mm3": 125000.00000000001
+    },
+    {
+      "name": "obj_file",
+      "passed": true
+    },
+    {
+      "name": "obj_roundtrip_count",
+      "passed": true
+    },
+    {
+      "name": "obj_roundtrip_dimensions",
+      "passed": true,
+      "dimensions_mm": [
+        50.0,
+        50.000003814697266,
+        50.000003814697266
+      ]
+    },
+    {
+      "name": "obj_roundtrip_integrity",
+      "passed": true,
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "closed": true,
+      "degenerate_faces": 0,
+      "volume_mm3": 125000.00000000073
+    },
+    {
+      "name": "fbx_file",
+      "passed": true
+    },
+    {
+      "name": "fbx_roundtrip_count",
+      "passed": true
+    },
+    {
+      "name": "fbx_roundtrip_dimensions",
+      "passed": true,
+      "dimensions_mm": [
+        50.0,
+        50.00000762939453,
+        50.00000762939453
+      ]
+    },
+    {
+      "name": "fbx_roundtrip_integrity",
+      "passed": true,
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "closed": true,
+      "degenerate_faces": 0,
+      "volume_mm3": 125000.00000000288
+    }
+  ],
+  "exports": {
+    "stl": {
+      "path": "cube_50mm.stl",
+      "bytes": 684
+    },
+    "obj": {
+      "path": "cube_50mm.obj",
+      "bytes": 962
+    },
+    "fbx": {
+      "path": "cube_50mm.fbx",
+      "bytes": 11820
+    }
+  },
+  "passed": true
+}
